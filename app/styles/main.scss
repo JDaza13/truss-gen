@@ -1,0 +1,85 @@
+$icon-font-path: "../bower_components/bootstrap-sass-official/assets/fonts/bootstrap/";
+// bower:scss
+@import "bootstrap-sass-official/assets/stylesheets/_bootstrap.scss";
+// endbower
+.tool-body{
+  #truss-canvas{
+    border: 2px solid gray;
+  }
+  .nodes-inputs{
+    .node-inputs-item{
+      width: 100%;
+      display: inline-flex;
+      font-weight: bold;
+      margin: 5px 0;
+      .node-label{
+        width: 10%;
+        margin: 7px 0;
+      }
+      .node-coordinate{
+        width: 12%;
+        margin: 0 2px;
+      }
+      .node-support{
+        width: 25%;
+        margin: 0 5px;
+      }
+      .node-load{
+        width: 15%;
+        margin: 0 5px;
+      }
+      .node-angle{
+        width: 15%;
+        margin: 0 5px;
+      }
+      .remove-node-button{
+        width: 7%;
+        height: 100%;
+        margin: 0 10px;
+      }
+    }
+    .elements-container{
+      border-top: 2px solid gray;
+      .add-new-element{
+        display: flex;
+        .new-element-start-node{
+          margin: 0 5px;
+          width: 40%;
+        }
+        .new-element-end-node{
+          margin: 0 5px;
+          width: 40%;
+        }
+        .add-element-container{
+          width: 15%;
+          margin: auto;
+        }
+      }
+      .element-list{
+        border-top: 2px solid gray;
+        .element-item{
+          padding: 5px 10px;
+          border-bottom: 1px solid #eee;
+          .remove-element-link{
+            float: right;
+          }
+        }
+      }
+    }
+  }
+  .add-node-container{
+    width: 100%;
+    .add-node-button{
+      width: 50%;
+      margin: 10px 0;
+    }
+  }
+  .first-matrix{
+    .build-matrix-1{
+      margin: 10px 0;
+    }
+    .table-bordered{
+      margin: 10px 0;
+    }
+  }
+}

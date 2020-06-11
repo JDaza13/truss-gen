@@ -1,0 +1,84 @@
+<div class="page-header">
+  <h1>{{title}} </h1>
+</div>
+<div class="row tool-body">
+  <div class="col-xs-8">
+    <div id="truss-canvas"></div>
+  </div>
+  <div class="col-xs-4 nodes-inputs">
+    <div class="col-xs-12">
+      <div class="input-group node-inputs-item" ng-repeat="node in nodes">
+        <span class="node-label">Node {{$index + 1}}</span>
+        <input type="number" class="form-control node-coordinate" placeholder="X" ng-model="node.x" ng-change="updateNode($index);">
+        <input type="number" class="form-control node-coordinate" placeholder="Y" ng-model="node.y" ng-change="updateNode($index);">
+        <md-select ng-model="node.support" placeholder="Select support" class="node-support">
+          <md-option value="{{support.value}}" ng-repeat="support in supports">{{support.label}}</md-option>
+        </md-select>
+        <input type="number" class="form-control node-load" placeholder="Load" ng-model="node.load">
+        <input type="number" class="form-control node-angle" placeholder="Angle" ng-model="node.angle">
+        <button type="button" class="btn btn-danger remove-node-button" ng-click="removeNode($index);">X</button>
+      </div>
+      <div class="add-node-container text-center">
+        <button type="button" class="btn btn-primary add-node-button" ng-click="addNode();">Add Node</button>
+      </div>
+    </div>
+    <hr>
+    <div class="col-xs-12 elements-container">
+      <div class="add-new-element">
+        <div class="new-element-start-node">
+          <div layout="row" layout-align="space-between center">
+            <span>Start node</span>
+            <md-select ng-model="newElement.startNode" placeholder="Select node">
+              <md-option value="{{$index}}" ng-repeat="elem in nodes">{{$index + 1}}</md-option>
+            </md-select>
+          </div>
+        </div>
+        <div class="new-element-end-node">
+          <div layout="row" layout-align="space-between center">
+            <span>End node</span>
+            <md-select ng-model="newElement.endNode" placeholder="Select node">
+              <md-option value="{{$index}}" ng-repeat="elem in nodes">{{$index + 1}}</md-option>
+            </md-select>
+          </div>
+        </div>
+        <div class="add-element-container text-center">
+          <button type="button" class="btn btn-primary add-element-button" ng-click="addElement();" ng-disabled="!newElement.startNode || !newElement.endNode">Add</button>
+        </div>
+      </div>
+      <div class="element-list">
+        <div class="element-item" ng-repeat="elem in elements">
+          <span><strong>Element </strong> {{buildNodeLabel(elem.startNode)}} - {{buildNodeLabel(elem.endNode)}}</span>
+          <br>
+          <span><strong>Length:</strong> {{calculateElemLength(elem.startNode, elem.endNode) | number:2}}</span>
+          <br>
+          <span><strong>Cx:</strong> {{calculateElemCosDirX(elem.startNode, elem.endNode) | number:2}}</span>
+          <br>
+          <span><strong>Cy:</strong> {{calculateElemCosDirY(elem.startNode, elem.endNode) | number:2}}</span>
+          <a href="javascript:void(0)" class="remove-element-link" ng-click="removeElement($index);">Remove element</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-xs-12 first-matrix">
+    <button type="button" class="btn btn-primary build-matrix-1" ng-click="buildMat1();">Build matrix 1</button>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Node</th>
+          <td ng-repeat="elem in elements">Element </strong> {{buildNodeLabel(elem.startNode)}} - {{buildNodeLabel(elem.endNode)}}</td>
+          <td>React</td>
+          <td>RValue</td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="row in mat1">
+          <th>{{row.label}}</th>
+          <td ng-repeat="column in row.columns">
+            <span ng-if="!column.notNumber">{{column.value | number:2}}</span>
+            <span ng-if="column.notNumber">{{column.value}}</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
