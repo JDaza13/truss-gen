@@ -44,15 +44,26 @@ $icon-font-path: "../bower_components/bootstrap-sass-official/assets/fonts/boots
         display: flex;
         .new-element-start-node{
           margin: 0 5px;
-          width: 40%;
+          width: 25%;
         }
         .new-element-end-node{
           margin: 0 5px;
-          width: 40%;
+          width: 25%;
+        }
+        .new-element-area{
+          margin: auto 5px;
+        }
+        .new-element-material{
+          margin: 0 5px;
+          width: 25%;
         }
         .add-element-container{
           width: 15%;
           margin: auto;
+          .add-element-button{
+            width: 90%;
+            float: right;
+          }
         }
       }
       .element-list{
@@ -95,6 +106,24 @@ $icon-font-path: "../bower_components/bootstrap-sass-official/assets/fonts/boots
           color: green;
         }
       }
+    }
+    .result-forces-virtual-vector-container{
+      border: 2px solid gray;
+      padding: 10px;
+      margin: 15px 10px;
+      .vector-item{
+        .compresion-item{
+          color: red;
+        }
+        .tension-item{
+          color: green;
+        }
+      }
+    }
+    .deflection-elements-vector-container{
+      border: 2px solid gray;
+      padding: 10px;
+      margin: 15px 10px;
     }
   }
 }

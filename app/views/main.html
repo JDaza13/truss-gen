@@ -29,7 +29,7 @@
           <div layout="row" layout-align="space-between center">
             <span>Start node</span>
             <md-select ng-model="newElement.startNode" placeholder="Select node">
-              <md-option value="{{$index}}" ng-repeat="elem in nodes">{{$index + 1}}</md-option>
+              <md-option value="{{$index}}" ng-repeat="elem in nodes track by $index">{{$index + 1}}</md-option>
             </md-select>
           </div>
         </div>
@@ -37,7 +37,18 @@
           <div layout="row" layout-align="space-between center">
             <span>End node</span>
             <md-select ng-model="newElement.endNode" placeholder="Select node">
-              <md-option value="{{$index}}" ng-repeat="elem in nodes">{{$index + 1}}</md-option>
+              <md-option value="{{$index}}" ng-repeat="elem in nodes track by $index">{{$index + 1}}</md-option>
+            </md-select>
+          </div>
+        </div>
+        <div class="new-element-area">
+          <input type="number" class="form-control new-element-area" placeholder="Area" ng-model="newElement.area">
+        </div>
+        <div class="new-element-material">
+          <div layout="row" layout-align="space-between center">
+            <span>Material</span>
+            <md-select ng-model="newElement.material" placeholder="Select material">
+              <md-option value="{{elem.value}}" ng-repeat="elem in nodes">{{elem.label}}</md-option>
             </md-select>
           </div>
         </div>
@@ -52,8 +63,11 @@
           <span><strong>Length:</strong> {{calculateElemLength(elem.startNode, elem.endNode) | number:2}}</span>
           <br>
           <span><strong>Cx:</strong> {{calculateElemCosDirX(elem.startNode, elem.endNode) | number:2}}</span>
-          
           <span><strong>Cy:</strong> {{calculateElemCosDirY(elem.startNode, elem.endNode) | number:2}}</span>
+          <br>
+          <span><strong>Area </strong> {{elem.area}}</span>
+          <br>
+          <span><strong>E </strong> {{elem.material}}</span>
           <a href="javascript:void(0)" class="remove-element-link" ng-click="removeElement($index);">Remove element</a>
         </div>
       </div>
@@ -83,13 +97,46 @@
   </div>
   <div class="col-xs-12 results">
     <div class="col-xs-4 result-forces-vector-container" ng-if="resultForcesVector.length > 0">
-      <h3>Result forces vector </h3>
+      <div class="col-xs-12">
+        <h4>Actual forces </h4>
+      </div>
       <div class="vector-item" ng-repeat="item in resultForcesVector track by $index">
         <span>Element  <strong>{{buildNodeLabel(elements[$index].startNode)}} - {{buildNodeLabel(elements[$index].endNode)}}</strong></span>
         <br>
         <span>Value: {{item | number:2}}</span>
         <span class="compresion-item" ng-if="item < 0"> <strong>Compression</strong></span>
         <span class="tension-item" ng-if="item >= 0"> <strong>Tension</strong></span>
+      </div>
+    </div>
+    <div class="col-xs-4 result-forces-virtual-vector-container">
+      <div class="col-xs-6">
+        <h4>Virtual forces </h4>
+      </div>
+      <div class="col-xs-6">
+        <md-select ng-model="virtualForcesNode" placeholder="Select node" ng-change="buildVirtualForcesVector();">
+          <md-option value="{{elem.label}}" ng-repeat="elem in mat1" ng-if="!elem.hasReact">{{elem.label}}</md-option>
+        </md-select>
+      </div>
+      <div class="vector-item" ng-repeat="item in resultForcesVirtualVector track by $index">
+        <span>Element  <strong>{{buildNodeLabel(elements[$index].startNode)}} - {{buildNodeLabel(elements[$index].endNode)}}</strong></span>
+        <br>
+        <span>Value: {{item | number:2}}</span>
+        <span class="compresion-item" ng-if="item < 0"> <strong>Compression</strong></span>
+        <span class="tension-item" ng-if="item >= 0"> <strong>Tension</strong></span>
+      </div>
+    </div>
+    <div class="col-xs-3 deflection-elements-vector-container">
+      <div class="col-xs-12">
+        <h4>Elements deflection </h4>
+      </div>
+      <div class="vector-item" ng-repeat="item in elementsDeflectionsVector track by $index">
+        <span>Element  <strong>{{buildNodeLabel(elements[$index].startNode)}} - {{buildNodeLabel(elements[$index].endNode)}}</strong></span>
+        <br>
+        <span>Fμl/AE: {{item}}</span>
+      </div>
+      <div class="vector-sum">
+        <h3>{{virtualForcesNode}} deflection: </h3>
+        <span>{{calculateDeflectionVectorSum(elementsDeflectionsVector)}}</span>
       </div>
     </div>
   </div>

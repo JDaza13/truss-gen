@@ -19,6 +19,12 @@ angular.module('environmentApp')
   
   $scope.mat1 = [[]];
   $scope.resultForcesVector = [];
+  $scope.resultForcesVirtualVector = [];
+  $scope.elementsDeflectionsVector = [];
+  
+  $scope.virtualForcesNode = null;
+  
+  $scope.materials = initMaterials;
   
   var elem = document.getElementById('truss-canvas');
   var params = { width: CANVAS_WIDTH, height: CANVAS_HEIGHT };
@@ -26,12 +32,12 @@ angular.module('environmentApp')
   
   var psx = function (coordinate) {
     
-    return coordinate + 50;
+    return (coordinate*100) + 50;
   };
   
   var psy = function (coordinate) {
     
-    return (CANVAS_HEIGHT - coordinate) - 50;
+    return (CANVAS_HEIGHT - (coordinate*100)) - 50;
   };
   
   var  degrees_to_radians = function(degrees) {
@@ -266,5 +272,64 @@ angular.module('environmentApp')
     invNonReactMat = math.inv(nonReactMat);
     $scope.resultForcesVector = math.multiply(invNonReactMat, loadsVector);
   };
+  
+  $scope.buildVirtualForcesVector = function() {
+    
+    var reactMat = [];
+    var nonReactMat = [];
+    var loadsVector = [];
+    
+    var invNonReactMat = null;
+    
+    for(var i = 0; i < $scope.mat1.length; i++){
+      var elem = $scope.mat1[i];
+      var filteredColumns = elem.columns.filter(function(e) {
+        return e.key.indexOf('cos') >= 0;
+      });
+      var plainColumns = [];
+      
+      for(var j = 0; j < filteredColumns.length; j++){
+        plainColumns.push(filteredColumns[j].value);
+      }
+      
+      if(elem.hasReact) {
+        reactMat.push(plainColumns);
+      }
+      else{
+        nonReactMat.push(plainColumns);
+        if(elem.label == $scope.virtualForcesNode){
+          loadsVector.push(1);
+        }
+        else{
+          loadsVector.push(0);
+        }
+      }
+    }
+    invNonReactMat = math.inv(nonReactMat);
+    $scope.resultForcesVirtualVector = math.multiply(invNonReactMat, loadsVector);
+    $scope.buildElementsDeflectionVector();
+  };
+  
+  $scope.buildElementsDeflectionVector = function() {
+  
+    $scope.elementsDeflectionsVector = [];
+    var resultValue = null;
+  
+    for(var i = 0; i < $scope.resultForcesVector.length; i++){
+      resultValue = ($scope.resultForcesVector[i] * $scope.resultForcesVirtualVector[i] * $scope.calculateElemLength($scope.elements[i].startNode, $scope.elements[i].endNode))/
+        ($scope.elements[i].area * parseInt($scope.elements[i].material));
+      $scope.elementsDeflectionsVector.push(resultValue);
+    }
+  };
+  
+  $scope.calculateDeflectionVectorSum = function(vector) {
+    
+    var sum = 0;
+    for(var i = 0; i < vector.length; i++){
+      sum = sum + vector[i];
+    }
+    
+    return sum;
+  }
   
 });
