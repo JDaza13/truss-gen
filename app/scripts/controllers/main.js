@@ -4,8 +4,8 @@ angular.module('environmentApp')
 .controller('MainCtrl', function ($scope) {
   $scope.title = 'Truss generator';
   
-  var CANVAS_WIDTH = 800;
-  var CANVAS_HEIGHT = 600;
+  var CANVAS_WIDTH = 1000;
+  var CANVAS_HEIGHT = 1000;
   
   $scope.supports = initSupports;
   $scope.nodes = initNodes;
@@ -32,12 +32,12 @@ angular.module('environmentApp')
   
   var psx = function (coordinate) {
     
-    return (coordinate*100) + 50;
+    return (coordinate*50) + 50;
   };
   
   var psy = function (coordinate) {
     
-    return (CANVAS_HEIGHT - (coordinate*100)) - 50;
+    return (CANVAS_HEIGHT - (coordinate*50)) - 50;
   };
   
   var  degrees_to_radians = function(degrees) {
@@ -300,7 +300,7 @@ angular.module('environmentApp')
       else{
         nonReactMat.push(plainColumns);
         if(elem.label == $scope.virtualForcesNode){
-          loadsVector.push(1);
+          loadsVector.push(-1);
         }
         else{
           loadsVector.push(0);

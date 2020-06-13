@@ -2,10 +2,10 @@
   <h1>{{title}} </h1>
 </div>
 <div class="row tool-body">
-  <div class="col-xs-6">
+  <div class="col-xs-7">
     <div id="truss-canvas"></div>
   </div>
-  <div class="col-xs-6 nodes-inputs">
+  <div class="col-xs-5 nodes-inputs">
     <div class="col-xs-12">
       <div class="input-group node-inputs-item" ng-repeat="node in nodes">
         <span class="node-label">Node {{$index + 1}}</span>
@@ -27,7 +27,7 @@
       <div class="add-new-element">
         <div class="new-element-start-node">
           <div layout="row" layout-align="space-between center">
-            <span>Start node</span>
+            <span>Start </span>
             <md-select ng-model="newElement.startNode" placeholder="Select node">
               <md-option value="{{$index}}" ng-repeat="elem in nodes track by $index">{{$index + 1}}</md-option>
             </md-select>
@@ -35,14 +35,14 @@
         </div>
         <div class="new-element-end-node">
           <div layout="row" layout-align="space-between center">
-            <span>End node</span>
+            <span>End </span>
             <md-select ng-model="newElement.endNode" placeholder="Select node">
               <md-option value="{{$index}}" ng-repeat="elem in nodes track by $index">{{$index + 1}}</md-option>
             </md-select>
           </div>
         </div>
         <div class="new-element-area">
-          <input type="number" class="form-control new-element-area" placeholder="Area" ng-model="newElement.area">
+          <input type="number" class="form-control new-element-area-input" placeholder="Area" ng-model="newElement.area">
         </div>
         <div class="new-element-material">
           <div layout="row" layout-align="space-between center">

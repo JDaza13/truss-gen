@@ -52,6 +52,10 @@ $icon-font-path: "../bower_components/bootstrap-sass-official/assets/fonts/boots
         }
         .new-element-area{
           margin: auto 5px;
+          width: 15%;
+          .new-element-area-input{
+            width: 100%;
+          }
         }
         .new-element-material{
           margin: 0 5px;
