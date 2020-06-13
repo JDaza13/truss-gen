@@ -101,7 +101,9 @@ angular.module('environmentApp')
     
     var newElement = {
       startNode: $scope.newElement.startNode,
-      endNode: $scope.newElement.endNode
+      endNode: $scope.newElement.endNode,
+      area: $scope.newElement.area,
+      material: $scope.newElement.material
     };
     
     var startNode = $scope.nodes[newElement.startNode];
