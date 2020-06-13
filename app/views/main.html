@@ -2,10 +2,10 @@
   <h1>{{title}} </h1>
 </div>
 <div class="row tool-body">
-  <div class="col-xs-8">
+  <div class="col-xs-6">
     <div id="truss-canvas"></div>
   </div>
-  <div class="col-xs-4 nodes-inputs">
+  <div class="col-xs-6 nodes-inputs">
     <div class="col-xs-12">
       <div class="input-group node-inputs-item" ng-repeat="node in nodes">
         <span class="node-label">Node {{$index + 1}}</span>
@@ -52,7 +52,7 @@
           <span><strong>Length:</strong> {{calculateElemLength(elem.startNode, elem.endNode) | number:2}}</span>
           <br>
           <span><strong>Cx:</strong> {{calculateElemCosDirX(elem.startNode, elem.endNode) | number:2}}</span>
-          <br>
+          
           <span><strong>Cy:</strong> {{calculateElemCosDirY(elem.startNode, elem.endNode) | number:2}}</span>
           <a href="javascript:void(0)" class="remove-element-link" ng-click="removeElement($index);">Remove element</a>
         </div>
@@ -60,18 +60,18 @@
     </div>
   </div>
   <div class="col-xs-12 first-matrix">
-    <button type="button" class="btn btn-primary build-matrix-1" ng-click="buildMat1();">Build matrix 1</button>
+    <button type="button" class="btn btn-primary build-matrix-1" ng-click="buildMat1();">Build!</button>
     <table class="table table-striped">
       <thead>
-        <tr>
+        <tr class="text-center">
           <th>Node</th>
           <td ng-repeat="elem in elements">Element </strong> {{buildNodeLabel(elem.startNode)}} - {{buildNodeLabel(elem.endNode)}}</td>
           <td>React</td>
-          <td>RValue</td>
+          <td>Load Value</td>
         </tr>
       </thead>
       <tbody>
-        <tr ng-repeat="row in mat1">
+        <tr ng-repeat="row in mat1" class="text-center">
           <th>{{row.label}}</th>
           <td ng-repeat="column in row.columns">
             <span ng-if="!column.notNumber">{{column.value | number:2}}</span>
@@ -80,5 +80,17 @@
         </tr>
       </tbody>
     </table>
+  </div>
+  <div class="col-xs-12 results">
+    <div class="col-xs-4 result-forces-vector-container" ng-if="resultForcesVector.length > 0">
+      <h3>Result forces vector </h3>
+      <div class="vector-item" ng-repeat="item in resultForcesVector track by $index">
+        <span>Element  <strong>{{buildNodeLabel(elements[$index].startNode)}} - {{buildNodeLabel(elements[$index].endNode)}}</strong></span>
+        <br>
+        <span>Value: {{item | number:2}}</span>
+        <span class="compresion-item" ng-if="item < 0"> <strong>Compression</strong></span>
+        <span class="tension-item" ng-if="item >= 0"> <strong>Tension</strong></span>
+      </div>
+    </div>
   </div>
 </div>

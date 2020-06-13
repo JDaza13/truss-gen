@@ -82,4 +82,19 @@ $icon-font-path: "../bower_components/bootstrap-sass-official/assets/fonts/boots
       margin: 10px 0;
     }
   }
+  .results{
+    .result-forces-vector-container{
+      border: 2px solid gray;
+      padding: 10px;
+      margin: 15px 10px;
+      .vector-item{
+        .compresion-item{
+          color: red;
+        }
+        .tension-item{
+          color: green;
+        }
+      }
+    }
+  }
 }

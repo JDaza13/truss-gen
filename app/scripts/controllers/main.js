@@ -7,55 +7,55 @@ angular.module('environmentApp')
   var CANVAS_WIDTH = 800;
   var CANVAS_HEIGHT = 600;
   
-  $scope.supports = [
-    {
-      label: 'Fixed support',
-      value: 'fixed'
-    },
-    {
-      label: 'Rolling support',
-      value: 'rolling'
-    }
-  ];
-  
-  $scope.nodes = [
-    {
-      x: 0,
-      y: 0
-    },
-    {
-      x: 100,
-      y: 0
-    },
-    {
-      x: 100,
-      y: 100
-    },
-    {
-      x: 0,
-      y: 100
-    }
-  ];
+  $scope.supports = initSupports;
+  $scope.nodes = initNodes;
   
   $scope.newElement = {
     startNode: null,
     endNode: null
   };
   
-  $scope.elements = [];
+  $scope.elements = initElements;
   
   $scope.mat1 = [[]];
+  $scope.resultForcesVector = [];
   
   var elem = document.getElementById('truss-canvas');
   var params = { width: CANVAS_WIDTH, height: CANVAS_HEIGHT };
   var two = new Two(params).appendTo(elem);
   
+  var psx = function (coordinate) {
+    
+    return coordinate + 50;
+  };
+  
+  var psy = function (coordinate) {
+    
+    return (CANVAS_HEIGHT - coordinate) - 50;
+  };
+  
+  var  degrees_to_radians = function(degrees) {
+    var pi = Math.PI;
+    return degrees * (pi/180);
+  };
+  
   for(var i = 0; i < $scope.nodes.length; i++){
-    $scope.nodes[i].nodeGraph = two.makeCircle($scope.nodes[i].x + 50, $scope.nodes[i].y + 50, 10);
+    $scope.nodes[i].nodeGraph = two.makeCircle(psx($scope.nodes[i].x), psy($scope.nodes[i].y), 10);
     $scope.nodes[i].nodeGraph.fill = '#ccc';
     $scope.nodes[i].nodeGraph.stroke = '#000';
     $scope.nodes[i].nodeGraph.linewidth = 2;
-  };
+  }
+  two.update();
+  
+  for(var i = 0; i < $scope.elements.length; i++){
+    var startNode = $scope.nodes[$scope.elements[i].startNode];
+    var endNode = $scope.nodes[$scope.elements[i].endNode];
+    
+    $scope.elements[i].elemGraph = two.makeLine(psx(startNode.x), psy(startNode.y), psx(endNode.x), psy(endNode.y));
+    $scope.elements[i].elemGraph.fill = '#000';
+    $scope.elements[i].elemGraph.stroke = '#000';
+    $scope.elements[i].elemGraph.linewidth = 2;
+  }
   two.update();
   
   $scope.addNode = function() {
@@ -63,7 +63,7 @@ angular.module('environmentApp')
     var newNode = {
       x: 0,
       y: 0,
-      nodeGraph: two.makeCircle(50, 50, 10)
+      nodeGraph: two.makeCircle(psx(0), psy(0), 10)
     };
     newNode.nodeGraph.fill = '#ccc';
     newNode.nodeGraph.stroke = '#000';
@@ -75,7 +75,7 @@ angular.module('environmentApp')
   $scope.updateNode = function(i) {
     
     var node = $scope.nodes[i];
-    node.nodeGraph.translation.set(node.x + 50, node.y + 50);
+    node.nodeGraph.translation.set(psx(node.x), psy(node.y));
     two.update();
   };
   
@@ -101,7 +101,7 @@ angular.module('environmentApp')
     var startNode = $scope.nodes[newElement.startNode];
     var endNode = $scope.nodes[newElement.endNode];
     
-    newElement.elemGraph = two.makeLine(startNode.x + 50, startNode.y + 50, endNode.x + 50, endNode.y + 50);
+    newElement.elemGraph = two.makeLine(psx(startNode.x), psy(startNode.y), psx(endNode.x), psy(endNode.y));
     newElement.elemGraph.fill = '#000';
     newElement.elemGraph.stroke = '#000';
     newElement.elemGraph.linewidth = 2;
@@ -114,7 +114,7 @@ angular.module('environmentApp')
     two.remove($scope.elements[i].elemGraph);
     two.update();
     $scope.elements.splice(i, 1);
-  }
+  };
   
   $scope.calculateElemLength = function(startIndex, endIndex) {
     
@@ -149,10 +149,12 @@ angular.module('environmentApp')
     for(var i = 0; i < nodes.length; i++){
       var rowX = {
         label: 'Node' + (parseInt(i)+1) + '-X',
+        hasReact: false,
         columns: []
       };
       var rowY = {
         label: 'Node' + (parseInt(i)+1) + '-Y',
+        hasReact: false,
         columns: []
       };
       
@@ -163,11 +165,11 @@ angular.module('environmentApp')
         var xcolumn = {
           key: 'xcos-'+ j,
           value: 0
-        }
+        };
         var ycolumn = {
           key: 'ycos-'+ j,
           value: 0
-        }
+        };
         
         if(localStartNode == i){
           xcolumn.value = $scope.calculateElemCosDirX(localStartNode, localEndNode);
@@ -190,45 +192,79 @@ angular.module('environmentApp')
         notNumber: true,
         value: '-'
       };
-      var reactValObjX = {
-        key: 'react-val-x' + i,
-        notNumber: true,
-        value: '-'
+      var loadValObjX = {
+        key: 'load-val-x' + i,
+        value: nodes[i].load && nodes[i].angle ? nodes[i].load * Math.cos(degrees_to_radians(nodes[i].angle)) : 0
       };
-      var reactValObjY = {
-        key: 'react-val-y' + i,
-        notNumber: true,
-        value: '-'
+      var loadValObjY = {
+        key: 'load-val-y' + i,
+        value: nodes[i].load && nodes[i].angle ? nodes[i].load * Math.sin(degrees_to_radians(nodes[i].angle)) : 0
       };
       if(nodes[i].support){
         if(nodes[i].support == 'fixed'){
           reactObjX.value = 'Rx';
           reactObjY.value = 'Ry';
-          reactValObjX.value = '?';
-          reactValObjY.value = '?';
-
+          // put flag to later separate matrix
+          rowX.hasReact = true;
+          rowY.hasReact = true;
         }
-        else{
-          reactObjX.value = 'Rx';
+        else if (nodes[i].support == 'vrolling'){
           reactObjY.value = 'Ry';
-          reactValObjX.value = '?';
-          reactValObjY.value = '?';
+          // put flag to later separate matrix
+          rowY.hasReact = true;
+        }
+        else if (nodes[i].support == 'hrolling'){
+          reactObjX.value = 'Rx';
+          // put flag to later separate matrix
+          rowX.hasReact = true;
         }
         rowX.columns.push(reactObjX);
-        rowX.columns.push(reactValObjX);
+        rowX.columns.push(loadValObjX);
         rowY.columns.push(reactObjY);
-        rowY.columns.push(reactValObjY);
+        rowY.columns.push(loadValObjY);
       }
       else{
         rowX.columns.push(reactObjX);
-        rowX.columns.push(reactValObjX);
+        rowX.columns.push(loadValObjX);
         rowY.columns.push(reactObjY);
-        rowY.columns.push(reactValObjY);
+        rowY.columns.push(loadValObjY);
       }
       
       $scope.mat1.push(rowX);
       $scope.mat1.push(rowY);
     }
+    $scope.buildSectionedMatrix();
+  };
+  
+  $scope.buildSectionedMatrix = function() {
+    
+    var reactMat = [];
+    var nonReactMat = [];
+    var loadsVector = [];
+    
+    var invNonReactMat = null;
+    
+    for(var i = 0; i < $scope.mat1.length; i++){
+      var elem = $scope.mat1[i];
+      var filteredColumns = elem.columns.filter(function(e) {
+        return e.key.indexOf('cos') >= 0;
+      });
+      var plainColumns = [];
+      
+      for(var j = 0; j < filteredColumns.length; j++){
+        plainColumns.push(filteredColumns[j].value);
+      }
+      
+      if(elem.hasReact) {
+        reactMat.push(plainColumns);
+      }
+      else{
+        nonReactMat.push(plainColumns);
+        loadsVector.push(elem.columns[elem.columns.length - 1].value);
+      }
+    }
+    invNonReactMat = math.inv(nonReactMat);
+    $scope.resultForcesVector = math.multiply(invNonReactMat, loadsVector);
   };
   
 });
